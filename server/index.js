@@ -1,6 +1,5 @@
 // server/index.js
 const fs = require("fs");
-// const fileName = "/Users/hdoedens/Downloads/breaker_config.json";
 const fileName = "/opt/currentmonitor/breaker_config.json";
 const content = require(fileName);
 const { exec } = require("child_process");
