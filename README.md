@@ -16,3 +16,14 @@ Npm will now install all the dependencies for you.
 To run a NodeJS application in the background on the Raspberry Pi you can use PM2. Install using `sudo apt-get install PM2`. 
 Then add the server with `PM2 start /home/pi/lantern-config-api/server/index.js`.
 PM2 adds a service with 'index' as the name. To restart the service (after you made changes for example) execute `PM2 restart index`.
+
+### Add local proxy
+To be able to use the API with the lantern-config front-end, add a proxy to nginx. Open the `/etc/nginx/sites-available/default` and add the following code within the `server` directive:
+
+```
+location /api/ {
+    proxy_pass http://localhost:3001/
+}
+```
+
+All requests to `/api` will now be directed to the API.
