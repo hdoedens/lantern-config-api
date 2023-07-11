@@ -1,15 +1,43 @@
 // server/index.js
 const fs = require("fs");
 const fileName = "/opt/currentmonitor/breaker_config.json";
-const content = require(fileName);
 const { exec } = require("child_process");
+const defaultFileContent =
+  "ewogICJodWIiOiB7CiAgICAiaHViIjogMSwKICAgICJ2b2x0YWdlX2NhbGlicmF0aW9uX2ZhY3RvciI6IDAuMDUsCiAgICAicGhhc2VzIjogWwogICAgICB7CiAgICAgICAgImlkIjogMSwKICAgICAgICAibmFtZSI6ICJmYXNlMSIsCiAgICAgICAgInBoYXNlX29mZnNldF9ucyI6IDAKICAgICAgfSwKICAgICAgewogICAgICAgICJpZCI6IDIsCiAgICAgICAgIm5hbWUiOiAiZmFzZTIiLAogICAgICAgICJwaGFzZV9vZmZzZXRfbnMiOiA2NjY2NjY3CiAgICAgIH0sCiAgICAgIHsKICAgICAgICAiaWQiOiAzLAogICAgICAgICJuYW1lIjogImZhc2UzIiwKICAgICAgICAicGhhc2Vfb2Zmc2V0X25zIjogMTMzMzMzMzMKICAgICAgfQogICAgXSwKICAgICJmcmVxdWVuY3kiOiA1MCwKICAgICJuZWVkc19jYWxpYnJhdGlvbiI6IGZhbHNlLAogICAgIm1xdHRfYnJva2VyX3VybCI6ICJ0Y3A6Ly8xOTIuMTY4LjEuMToxODgzIiwKICAgICJtcXR0X3Bhc3N3b3JkIjogInBhc3N3b3JkIgogIH0sCiAgImJyZWFrZXJzIjogW10KfQ==";
 
 const express = require("express");
 const PORT = process.env.PORT || 3001;
 
 const app = express();
+
+var content = "";
+
+const createDefaultContent = () => {
+  // write default file and try loading again
+  let buff = new Buffer.from(defaultFileContent, "base64");
+  fs.writeFileSync(fileName, buff.toString("ascii"));
+  loadContentFromFile();
+};
+
+const loadContentFromFile = () => {
+  try {
+    if (fs.existsSync(fileName)) {
+      content = JSON.parse(fs.readFileSync(fileName, "utf8"));
+    } else {
+      console.log(
+        "No breaker config found in '" + fileName + "'. Writing default config."
+      );
+      createDefaultContent();
+    }
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+loadContentFromFile();
+
 app.use(express.json());
-app.use(express.urlencoded());
+app.use(express.urlencoded({ extended: true }));
 
 app.get("/api/hub", (req, res) => {
   res.json(content.hub);
