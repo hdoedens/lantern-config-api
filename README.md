@@ -32,8 +32,7 @@ pm2 restart index
 ```
 If you want to automaticly start the service while starting the pi, add this line to a startup file i.e:
 ```
-nano /etc/init.d/startup.sh
-chmod +x /etc/init.d/startup.sh
+pm2 startup
 ```
 
 
